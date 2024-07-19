@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/fatih/color"
 	"github.com/wbreza/azd/bicep"
 	"github.com/wbreza/azd/core/infra"
 	"github.com/wbreza/azd/core/ioc"
@@ -32,7 +33,7 @@ func main() {
 
 	providerName := os.Args[1]
 	if err := exec(ctx, providerFactory, providerName); err != nil {
-		panic(err)
+		color.Red("ERROR: %v", err)
 	}
 }
 
@@ -42,7 +43,7 @@ func exec(ctx context.Context, providerFactory *infra.ProviderFactory, providerN
 		return fmt.Errorf("No infra provider found with name '%s'. Details: %w", providerName, err)
 	}
 
-	fmt.Printf("Created %s provider\n", infraProvider.Name())
+	color.Cyan("Created %s provider\n", infraProvider.Name())
 
 	return nil
 }
