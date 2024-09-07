@@ -1,6 +1,9 @@
 package ext
 
-import "github.com/wbreza/container/v4"
+import (
+	"github.com/wbreza/azd/ext/cmd"
+	"github.com/wbreza/container/v4"
+)
 
 type Extension interface {
 	Name() string
@@ -8,15 +11,21 @@ type Extension interface {
 }
 
 type ExtensionProvider struct {
-	container *container.Container
+	container      *container.Container
+	commandManager cmd.Manager
 }
 
-func NewExtensionProvider(rootContainer *container.Container) *ExtensionProvider {
+func NewExtensionProvider(rootContainer *container.Container, commandManager cmd.Manager) *ExtensionProvider {
 	return &ExtensionProvider{
-		container: rootContainer,
+		container:      rootContainer,
+		commandManager: commandManager,
 	}
 }
 
-func (ep *ExtensionProvider) RegisterInfraProvider(name string, provider interface{}) error {
-	return ep.container.RegisterNamedTransient(name, provider)
+func (ep *ExtensionProvider) RegisterInfraProvider(name string, providerResolver interface{}) error {
+	return ep.container.RegisterNamedTransient(name, providerResolver)
+}
+
+func (ep *ExtensionProvider) RegisterCommandProvider(name string, providerResolver interface{}) error {
+	return ep.commandManager.AddPlugin(name, providerResolver)
 }

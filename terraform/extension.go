@@ -5,16 +5,10 @@ import (
 	"github.com/wbreza/azd/terraform/infra"
 )
 
-var Extensions = map[string]ext.Extension{}
-
-func init() {
-	Extensions["bicep"] = NewTerraformExtension()
-}
-
 type TerraformExtension struct {
 }
 
-func NewTerraformExtension() ext.Extension {
+func NewTerraformExtension() *TerraformExtension {
 	return &TerraformExtension{}
 }
 
@@ -27,3 +21,5 @@ func (be *TerraformExtension) Configure(provider *ext.ExtensionProvider) error {
 
 	return nil
 }
+
+var _ ext.Extension = &TerraformExtension{}

@@ -5,16 +5,10 @@ import (
 	"github.com/wbreza/azd/ext"
 )
 
-var Extensions = map[string]ext.Extension{}
-
-func init() {
-	Extensions["bicep"] = NewBicepExtension()
-}
-
 type BicepExtension struct {
 }
 
-func NewBicepExtension() ext.Extension {
+func NewBicepExtension() *BicepExtension {
 	return &BicepExtension{}
 }
 
@@ -27,3 +21,5 @@ func (be *BicepExtension) Configure(provider *ext.ExtensionProvider) error {
 
 	return nil
 }
+
+var _ ext.Extension = &BicepExtension{}
