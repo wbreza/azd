@@ -19,6 +19,7 @@ type Manager struct {
 func NewManager(rootContainer *container.Container) *Manager {
 	return &Manager{
 		rootCobraCommand: &cobra.Command{
+			Use:   "azd",
 			Short: "Azure Developer CLI",
 		},
 		container: rootContainer,
@@ -43,7 +44,7 @@ func (m *Manager) Initialize(ctx context.Context) error {
 
 func (m *Manager) AddPlugin(name string, resolver any) error {
 	pluginName := fmt.Sprintf("%s-commands-plugin", name)
-	if err := container.RegisterNamedSingleton(pluginName, resolver); err != nil {
+	if err := m.container.RegisterNamedSingleton(pluginName, resolver); err != nil {
 		return err
 	}
 
@@ -53,42 +54,18 @@ func (m *Manager) AddPlugin(name string, resolver any) error {
 }
 
 func (m *Manager) RegisterCommand(metadata *corecmd.CommandMetadata) error {
-	return nil
+	_, err := m.registerCommand(m.rootCobraCommand, metadata)
+	return err
 }
 
 func (m *Manager) RegisterCommandGroup(metadata *corecmd.CommandGroupMetadata) error {
-	commandGroup := &cobra.Command{
-		Use:   metadata.Name,
-		Short: metadata.Short,
-		Long:  metadata.Description,
+	commandGroup, err := m.registerCommand(m.rootCobraCommand, &metadata.CommandMetadata)
+	if err != nil {
+		return err
 	}
 
-	m.rootCobraCommand.AddCommand(commandGroup)
-
 	for _, commandMetadata := range metadata.Commands {
-		commandName := fmt.Sprintf("%s-%s", commandGroup.CommandPath(), commandMetadata.Name)
-		m.container.RegisterNamedTransient(commandName, commandMetadata.Resolver)
-
-		commandGroup.AddCommand(&cobra.Command{
-			Use:   commandMetadata.Name,
-			Short: commandMetadata.Short,
-			Long:  commandMetadata.Description,
-			RunE: func(cmd *cobra.Command, args []string) error {
-				ctx := cmd.Context()
-
-				var command corecmd.Command
-				if err := m.container.ResolveNamed(cmd.Context(), commandName, &command); err != nil {
-					return err
-				}
-
-				_, err := command.Run(ctx, args)
-				if err != nil {
-					return err
-				}
-
-				return nil
-			},
-		})
+		m.registerCommand(commandGroup, &commandMetadata)
 	}
 
 	return nil
@@ -96,6 +73,37 @@ func (m *Manager) RegisterCommandGroup(metadata *corecmd.CommandGroupMetadata) e
 
 func (m *Manager) Run(ctx context.Context) error {
 	return m.rootCobraCommand.ExecuteContext(ctx)
+}
+
+func (m *Manager) registerCommand(parent *cobra.Command, commandMetadata *corecmd.CommandMetadata) (*cobra.Command, error) {
+	command := commandMetadata.Cobra
+
+	if commandMetadata.Resolver != nil {
+		commandName := fmt.Sprintf("%s-%s", parent.CommandPath(), command.Name())
+		if err := m.container.RegisterNamedTransient(commandName, commandMetadata.Resolver); err != nil {
+			return nil, err
+		}
+
+		command.RunE = func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
+
+			var command corecmd.Command
+			if err := m.container.ResolveNamed(ctx, commandName, &command); err != nil {
+				return err
+			}
+
+			_, err := command.Run(ctx, args)
+			if err != nil {
+				return err
+			}
+
+			return nil
+		}
+	}
+
+	parent.AddCommand(command)
+
+	return command, nil
 }
 
 var _ extcmd.Manager = &Manager{}

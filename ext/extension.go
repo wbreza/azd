@@ -7,6 +7,7 @@ import (
 
 type Extension interface {
 	Name() string
+	ConfigureContainer(container *container.Container) error
 	Configure(provider *ExtensionProvider) error
 }
 

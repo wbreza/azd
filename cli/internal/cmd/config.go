@@ -4,34 +4,39 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/spf13/cobra"
 	corecmd "github.com/wbreza/azd/core/cmd"
 )
 
-func newConfigCommandGroup() *corecmd.CommandGroupMetadata {
+func newConfigCommandGroupMetadata() *corecmd.CommandGroupMetadata {
 	return &corecmd.CommandGroupMetadata{
 		CommandMetadata: corecmd.CommandMetadata{
-			Name:        "config",
-			Short:       "config",
-			Description: "Manage azd configuration",
+			Cobra: &cobra.Command{
+				Use:   "config",
+				Short: "Manage azd configuration",
+			},
 		},
 		Commands: []corecmd.CommandMetadata{
 			{
-				Name:        "show",
-				Short:       "show",
-				Description: "Show the current configuration",
-				Resolver:    newShowCommand,
+				Cobra: &cobra.Command{
+					Use:   "show",
+					Short: "Show the current configuration",
+				},
+				Resolver: newShowCommand,
 			},
 			{
-				Name:        "set",
-				Short:       "set",
-				Description: "Set a configuration value",
-				Resolver:    newSetCommand,
+				Cobra: &cobra.Command{
+					Use:   "set",
+					Short: "Set a configuration value",
+				},
+				Resolver: newSetCommand,
 			},
 			{
-				Name:        "unset",
-				Short:       "unset",
-				Description: "Unset a configuration value",
-				Resolver:    newUnsetCommand,
+				Cobra: &cobra.Command{
+					Use:   "unset",
+					Short: "Unset a configuration value",
+				},
+				Resolver: newUnsetCommand,
 			},
 		},
 	}

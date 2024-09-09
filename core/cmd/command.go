@@ -1,13 +1,14 @@
 package cmd
 
-import "context"
+import (
+	"context"
+
+	"github.com/spf13/cobra"
+)
 
 type CommandMetadata struct {
-	Name        string
-	Short       string
-	Description string
-	Aliases     []string
-	Resolver    any
+	Cobra    *cobra.Command
+	Resolver any
 }
 
 type CommandGroupMetadata struct {

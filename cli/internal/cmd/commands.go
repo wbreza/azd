@@ -12,9 +12,9 @@ func NewDefaultCommandsPlugin() extcmd.Plugin {
 }
 
 func (dp *DefaultCommandsPlugin) Configure(construct extcmd.Provider) error {
-	configGroup := newConfigCommandGroup()
+	construct.RegisterCommandGroup(newConfigCommandGroupMetadata())
+	construct.RegisterCommand(newProvisionCommandMetadata())
 
-	construct.RegisterCommandGroup(configGroup)
 	return nil
 }
 

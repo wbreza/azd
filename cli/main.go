@@ -7,7 +7,6 @@ import (
 	"github.com/wbreza/azd/bicep"
 	"github.com/wbreza/azd/cli/internal"
 	"github.com/wbreza/azd/cli/internal/cmd"
-	"github.com/wbreza/azd/core/infra"
 	"github.com/wbreza/azd/core/ioc"
 	"github.com/wbreza/azd/ext"
 	extcmd "github.com/wbreza/azd/ext/cmd"
@@ -34,7 +33,6 @@ func initContainer() *container.Container {
 	container.MustRegisterInstance(rootContainer, rootContainer)
 	container.MustRegisterInstanceAs[ioc.ServiceLocator](rootContainer, rootContainer)
 	container.MustRegisterSingleton(rootContainer, ext.NewExtensionProvider)
-	container.MustRegisterSingleton(rootContainer, infra.NewProviderFactory)
 	container.MustRegisterSingleton(rootContainer, cmd.NewManager)
 
 	container.MustRegisterSingleton(rootContainer, func(commandManager *cmd.Manager) extcmd.Manager {
@@ -57,6 +55,10 @@ func initExtensions(ctx context.Context, rootContainer *container.Container) err
 
 	return rootContainer.Call(ctx, func(extensionProvider *ext.ExtensionProvider) error {
 		for _, extension := range allExtensions {
+			if err := extension.ConfigureContainer(rootContainer); err != nil {
+				return err
+			}
+
 			if err := extension.Configure(extensionProvider); err != nil {
 				return err
 			}
