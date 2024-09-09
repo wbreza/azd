@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 	corecmd "github.com/wbreza/azd/core/cmd"
@@ -55,17 +56,8 @@ func (m *Manager) AddPlugin(name string, resolver any) error {
 
 func (m *Manager) RegisterCommand(metadata *corecmd.CommandMetadata) error {
 	_, err := m.registerCommand(m.rootCobraCommand, metadata)
-	return err
-}
-
-func (m *Manager) RegisterCommandGroup(metadata *corecmd.CommandGroupMetadata) error {
-	commandGroup, err := m.registerCommand(m.rootCobraCommand, &metadata.CommandMetadata)
 	if err != nil {
 		return err
-	}
-
-	for _, commandMetadata := range metadata.Commands {
-		m.registerCommand(commandGroup, &commandMetadata)
 	}
 
 	return nil
@@ -79,7 +71,7 @@ func (m *Manager) registerCommand(parent *cobra.Command, commandMetadata *corecm
 	command := commandMetadata.Cobra
 
 	if commandMetadata.Resolver != nil {
-		commandName := fmt.Sprintf("%s-%s", parent.CommandPath(), command.Name())
+		commandName := strings.ReplaceAll(fmt.Sprintf("%s-%s", parent.CommandPath(), command.Name()), " ", "-")
 		if err := m.container.RegisterNamedTransient(commandName, commandMetadata.Resolver); err != nil {
 			return nil, err
 		}
@@ -102,6 +94,14 @@ func (m *Manager) registerCommand(parent *cobra.Command, commandMetadata *corecm
 	}
 
 	parent.AddCommand(command)
+
+	// Process any sub commands
+	for _, subCommandMetadata := range commandMetadata.Commands {
+		_, err := m.registerCommand(command, &subCommandMetadata)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	return command, nil
 }

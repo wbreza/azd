@@ -9,7 +9,6 @@ type Manager interface {
 }
 
 type Provider interface {
-	RegisterCommandGroup(metadata *corecmd.CommandGroupMetadata) error
 	RegisterCommand(metadata *corecmd.CommandMetadata) error
 }
 

@@ -9,11 +9,6 @@ import (
 type CommandMetadata struct {
 	Cobra    *cobra.Command
 	Resolver any
-}
-
-type CommandGroupMetadata struct {
-	CommandMetadata
-
 	Commands []CommandMetadata
 }
 

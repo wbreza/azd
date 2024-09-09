@@ -8,13 +8,11 @@ import (
 	corecmd "github.com/wbreza/azd/core/cmd"
 )
 
-func newConfigCommandGroupMetadata() *corecmd.CommandGroupMetadata {
-	return &corecmd.CommandGroupMetadata{
-		CommandMetadata: corecmd.CommandMetadata{
-			Cobra: &cobra.Command{
-				Use:   "config",
-				Short: "Manage azd configuration",
-			},
+func newConfigCommandMetadata() *corecmd.CommandMetadata {
+	return &corecmd.CommandMetadata{
+		Cobra: &cobra.Command{
+			Use:   "config",
+			Short: "Manage azd configuration",
 		},
 		Commands: []corecmd.CommandMetadata{
 			{

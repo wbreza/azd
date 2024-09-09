@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/fatih/color"
+	"github.com/wbreza/azd/ai"
 	"github.com/wbreza/azd/bicep"
 	"github.com/wbreza/azd/cli/internal"
 	"github.com/wbreza/azd/cli/internal/cmd"
@@ -49,6 +50,7 @@ func initContainer() *container.Container {
 func initExtensions(ctx context.Context, rootContainer *container.Container) error {
 	allExtensions := []ext.Extension{
 		internal.NewDefaultExtension(),
+		ai.NewAiExtension(),
 		bicep.NewBicepExtension(),
 		terraform.NewTerraformExtension(),
 	}

@@ -12,7 +12,7 @@ import (
 func newProvisionCommandMetadata() *corecmd.CommandMetadata {
 	return &corecmd.CommandMetadata{
 		Cobra: &cobra.Command{
-			Use:   "provision",
+			Use:   "provision <name>",
 			Short: "Provisions Azure resources",
 			Args:  cobra.ExactArgs(1),
 		},
