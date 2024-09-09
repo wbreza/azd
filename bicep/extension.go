@@ -21,6 +21,7 @@ func (be *BicepExtension) ConfigureContainer(container *container.Container) err
 	return nil
 }
 
+// Configure registers the bicep provider with the extension provider
 func (be *BicepExtension) Configure(provider *ext.ExtensionProvider) error {
 	provider.RegisterInfraProvider("bicep", infra.NewProvider)
 

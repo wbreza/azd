@@ -21,6 +21,7 @@ func (be *TerraformExtension) ConfigureContainer(container *container.Container)
 	return nil
 }
 
+// Configure registers the terraform provider with the extension provider
 func (be *TerraformExtension) Configure(provider *ext.ExtensionProvider) error {
 	provider.RegisterInfraProvider("terraform", infra.NewProvider)
 

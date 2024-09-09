@@ -48,6 +48,7 @@ func initContainer() *container.Container {
 }
 
 func initExtensions(ctx context.Context, rootContainer *container.Container) error {
+	// Declare the extensions that should be loaded into `azd`
 	allExtensions := []ext.Extension{
 		internal.NewDefaultExtension(),
 		ai.NewAiExtension(),
@@ -57,10 +58,12 @@ func initExtensions(ctx context.Context, rootContainer *container.Container) err
 
 	return rootContainer.Call(ctx, func(extensionProvider *ext.ExtensionProvider) error {
 		for _, extension := range allExtensions {
+			// Each extension could register its own components into the container
 			if err := extension.ConfigureContainer(rootContainer); err != nil {
 				return err
 			}
 
+			// Extension has a configuration entrypoint that allows it to extensible components
 			if err := extension.Configure(extensionProvider); err != nil {
 				return err
 			}
@@ -70,6 +73,7 @@ func initExtensions(ctx context.Context, rootContainer *container.Container) err
 	})
 }
 
+// Run the default azd command
 func runDefaultCommand(ctx context.Context, rootContainer *container.Container) error {
 	return rootContainer.Call(ctx, func(commandManager *cmd.Manager) error {
 		if err := commandManager.Initialize(ctx); err != nil {

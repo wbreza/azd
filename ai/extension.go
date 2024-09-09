@@ -21,6 +21,7 @@ func (ai *AiExtension) ConfigureContainer(container *container.Container) error 
 	return nil
 }
 
+// Configure registers the ai commands with the extension provider
 func (ai *AiExtension) Configure(provider *ext.ExtensionProvider) error {
 	provider.RegisterCommandProvider("ai", cmd.NewAiCommandsPlugin)
 

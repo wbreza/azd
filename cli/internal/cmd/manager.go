@@ -28,6 +28,7 @@ func NewManager(rootContainer *container.Container) *Manager {
 	}
 }
 
+// Initialize initializes any command plugins and loads them into the root command
 func (m *Manager) Initialize(ctx context.Context) error {
 	for _, pluginName := range m.plugins {
 		var plugin extcmd.Plugin

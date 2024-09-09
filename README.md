@@ -14,3 +14,5 @@ This is a repo with examples of breaking azd into multiple modules.
   - Uses: ext
 - **terraform** - Terraform implementation of infra provider
   - Uses: ext
+- **ai** - AI command extension for custom AI commands
+  - Uses: ext, core
